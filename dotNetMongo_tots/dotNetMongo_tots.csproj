@@ -17,6 +17,5 @@
   <ItemGroup>
     <Compile Remove="DBCalls\MongoServer.cs" />
     <Compile Remove="DBCalls\DataAccess.cs" />
-    <Compile Remove="DBCalls\IProductRepository.cs" />
   </ItemGroup>
 </Project>
