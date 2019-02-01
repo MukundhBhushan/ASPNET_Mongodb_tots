@@ -1,7 +1,5 @@
-﻿using System;
-using dotNetMongo_tots.DBCalls;
+﻿using dotNetMongo_tots.DBCalls;
 using System.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using dotNetMongo_tots.models;
 using MongoDB.Driver;
@@ -25,7 +23,7 @@ namespace dotNetMongo_tots
 
         public Task<Product> GetProduct(string name)
         {
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(m => m.Name, name);
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(m => m.ProductName, name);
             return _context
                     .Products
                     .Find(filter)
@@ -52,7 +50,7 @@ namespace dotNetMongo_tots
 
         public async Task<bool> Delete(string name)
         {
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(m => m.Name, name);
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(m => m.ProductName, name);
             DeleteResult deleteResult = await _context
                                                 .Products
                                                 .DeleteOneAsync(filter);

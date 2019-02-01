@@ -2,44 +2,71 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dotNetMongo_tots.DBCalls;
 using Microsoft.AspNetCore.Mvc;
+using dotNetMongo_tots.models;
 
 namespace dotNetMongo_tots.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ValuesController : ControllerBase
+    [Produces("application/json")]
+    [Route("api/Game")]
+    public class ProductsController : Controller
     {
-        // GET api/values
+        private readonly IProductRepository _productrepository;
+
+        public ProductsController(IProductRepository pr)
+        {
+            pr = _productrepository;
+        }
+
+        //get
+
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new ObjectResult(await _productrepository.GetAllProducts());
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        //GET: api/product/name
+        [HttpGet("{name}", Name = "Get")]
+        public async Task<IActionResult> Get(string name)
         {
-            return "value";
+            var game = await _productrepository.GetProduct(name);
+
+            if (game == null)
+                return new NotFoundResult();
+            return new ObjectResult(game);
         }
 
-        // POST api/values
+        // POST: api/Product
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] Product product)
         {
+            await _productrepository.Create(product);
+            return new OkObjectResult(product);
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PUT: api/Game/5
+        [HttpPut("{name}")]
+        public async Task<IActionResult> Put(string name, [FromBody]Product product)
         {
+            var productFromdb = await _productrepository.GetProduct(name);
+            if (productFromdb == null)
+                return new NotFoundResult();
+            product.Id = productFromdb.Id;
+            await _productrepository.Update(product);
+            return new OkObjectResult(product);
+        }
+        // DELETE: api/ApiWithActions/5
+        [HttpDelete("{name}")]
+        public async Task<IActionResult> Delete(string name)
+        {
+            var gameFromDb = await _productrepository.GetProduct(name);
+            if (gameFromDb == null)
+                return new NotFoundResult();
+            await _productrepository.Delete(name);
+            return new OkResult();
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
